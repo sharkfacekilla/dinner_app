@@ -64,16 +64,21 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
                 {cookingMode ? "Exit Cooking Mode" : "Start Cooking"}
               </span>
             </Button>
-            {recipe.isOwner && (
-              <ShareDialog recipeId={recipe.id} sharedWith={recipe.sharedWith ?? []} />
-            )}
+            <ShareDialog
+              recipeId={recipe.id}
+              isOwner={Boolean(recipe.isOwner)}
+              sharedWith={recipe.sharedWith ?? []}
+            />
             <Button variant="ghost" size="icon" onClick={handleFavorite}>
               <Heart
                 className={cn("h-5 w-5", isFavorite && "fill-red-500 text-red-500")}
               />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => window.print()}>
-              <Printer className="h-5 w-5" />
+            {/* Prints the designed PDF rather than the web page */}
+            <Button variant="ghost" size="icon" asChild>
+              <a href={`/recipes/${recipe.id}/pdf?print=1`} target="_blank" rel="noopener" aria-label="Print">
+                <Printer className="h-5 w-5" />
+              </a>
             </Button>
           </div>
         </div>

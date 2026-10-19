@@ -17,6 +17,7 @@ const withRelations = (userId: string) =>
     owner: { select: { username: true } },
     favorites: { where: { userId }, select: { userId: true } },
     shares: { select: { user: { select: { username: true } } } },
+    photo: { select: { updatedAt: true } }, // just the timestamp, never the bytes
   }) satisfies Prisma.RecipeInclude;
 
 type DbRecipe = Prisma.RecipeGetPayload<{ include: ReturnType<typeof withRelations> }>;
@@ -29,7 +30,9 @@ function toRecipe(r: DbRecipe, userId: string): Recipe {
     id: r.id,
     title: r.title,
     description: r.description ?? "",
-    image: r.image ?? undefined,
+    // Uploaded photo wins; the plain URL is only used by the sample (seed) recipes
+    image: r.photo ? `/images/${r.id}?v=${r.photo.updatedAt.getTime()}` : (r.image ?? undefined),
+    hasPhoto: Boolean(r.photo),
     cookTime: r.cookTime ?? 0,
     prepTime: r.prepTime ?? 0,
     difficulty: (r.difficulty ?? "Easy") as Recipe["difficulty"],

@@ -15,6 +15,7 @@ export type Recipe = {
   title: string;
   description: string;
   image?: string;
+  hasPhoto?: boolean; // true = uploaded photo (used in the PDF); false = none or a sample URL
   cookTime: number;
   prepTime: number;
   difficulty: "Easy" | "Medium" | "Hard";

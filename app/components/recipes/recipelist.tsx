@@ -16,14 +16,13 @@ export function RecipeList({ recipes }: { recipes: Recipe[] }) {
         >
           {/* List View Favorite Toggle */}
           <div className="absolute top-2 right-2 z-10 flex items-center">
-            {recipe.isOwner && (
-              <ShareDialog
-                recipeId={recipe.id}
-                sharedWith={recipe.sharedWith ?? []}
-                variant="icon"
-                tone="muted"
-              />
-            )}
+            <ShareDialog
+              recipeId={recipe.id}
+              isOwner={Boolean(recipe.isOwner)}
+              sharedWith={recipe.sharedWith ?? []}
+              variant="icon"
+              tone="muted"
+            />
             <FavoriteToggle recipeId={recipe.id} initialFavorite={recipe.isFavorite} />
           </div>
           <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted sm:h-24 sm:w-24">

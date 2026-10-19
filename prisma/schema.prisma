@@ -32,6 +32,7 @@ model Recipe {
   instructions Instruction[]
   favorites    Favorite[]
   shares       RecipeShare[]
+  photo        RecipeImage?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -102,4 +103,15 @@ model Instruction {
   tip      String?
   recipeId String
   recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+// Uploaded recipe photo, already resized/re-encoded to JPEG with metadata stripped (lib/images.ts).
+// Stored in the database so one pg_dump backs up everything.
+model RecipeImage {
+  recipeId  String   @id
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  data      Bytes
+  width     Int
+  height    Int
+  updatedAt DateTime @updatedAt
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Download, Printer, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -17,16 +17,19 @@ import { setRecipeShare } from "@/lib/actions/recipe";
 import { cn } from "@/lib/utils";
 import { useOtherUsers } from "./otheruserscontext";
 
-// Owner-only: pick which people can see this recipe.
+// Share menu: Download/Print the recipe as a PDF (anyone who can see it) and,
+// for the owner only, pick which people can see it.
 // variant "button" = labelled button (recipe page), "icon" = round icon (cards and list rows).
 // tone "light" for icons over a photo, "muted" for icons on a plain background.
 export function ShareDialog({
   recipeId,
+  isOwner,
   sharedWith,
   variant = "button",
   tone = "light",
 }: {
   recipeId: string;
+  isOwner: boolean;
   sharedWith: string[];
   variant?: "button" | "icon";
   tone?: "light" | "muted";
@@ -82,32 +85,52 @@ export function ShareDialog({
             <Button variant="outline" size="sm" className="gap-2">
               <Share2 className="h-4 w-4" />
               <span className="hidden sm:inline">
-                {shared.length ? `Shared (${shared.length})` : "Share"}
+                {isOwner && shared.length ? `Shared (${shared.length})` : "Share"}
               </span>
             </Button>
           )}
         </DialogTrigger>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Share recipe</DialogTitle>
-            <DialogDescription>
-              People you share with can see and favorite it, but not change it.
-            </DialogDescription>
+            <DialogTitle>Share</DialogTitle>
+            <DialogDescription>Save it as a PDF to send anywhere, or print it.</DialogDescription>
           </DialogHeader>
-          {otherUsers.length === 0 ? (
-            <p className="text-sm text-muted-foreground">There are no other accounts to share with.</p>
-          ) : (
-            <div className="space-y-3">
-              {otherUsers.map((username) => (
-                <div key={username} className="flex items-center gap-3">
-                  <Checkbox
-                    id={`share-${username}`}
-                    checked={shared.includes(username)}
-                    onCheckedChange={(checked) => toggle(username, checked === true)}
-                  />
-                  <Label htmlFor={`share-${username}`}>{username}</Label>
-                </div>
-              ))}
+          <div className="grid grid-cols-2 gap-2">
+            <Button asChild variant="outline" className="gap-2">
+              <a href={`/recipes/${recipeId}/pdf`} download>
+                <Download className="h-4 w-4" />
+                Download PDF
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="gap-2">
+              <a href={`/recipes/${recipeId}/pdf?print=1`} target="_blank" rel="noopener">
+                <Printer className="h-4 w-4" />
+                Print
+              </a>
+            </Button>
+          </div>
+          {isOwner && (
+            <div className="space-y-3 border-t border-border pt-4">
+              <div>
+                <p className="text-sm font-medium">Share with people</p>
+                <p className="text-sm text-muted-foreground">
+                  They can see and favorite it, but not change it.
+                </p>
+              </div>
+              {otherUsers.length === 0 ? (
+                <p className="text-sm text-muted-foreground">There are no other accounts to share with.</p>
+              ) : (
+                otherUsers.map((username) => (
+                  <div key={username} className="flex items-center gap-3">
+                    <Checkbox
+                      id={`share-${recipeId}-${username}`}
+                      checked={shared.includes(username)}
+                      onCheckedChange={(checked) => toggle(username, checked === true)}
+                    />
+                    <Label htmlFor={`share-${recipeId}-${username}`}>{username}</Label>
+                  </div>
+                ))
+              )}
             </div>
           )}
           {error && (

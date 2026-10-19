@@ -60,9 +60,12 @@ export function RecipeCard({ recipe, onClick, footer }: RecipeCardProps) {
               )}
             />
           </button>
-          {recipe.isOwner && (
-            <ShareDialog recipeId={recipe.id} sharedWith={recipe.sharedWith ?? []} variant="icon" />
-          )}
+          <ShareDialog
+            recipeId={recipe.id}
+            isOwner={Boolean(recipe.isOwner)}
+            sharedWith={recipe.sharedWith ?? []}
+            variant="icon"
+          />
         </div>
 
         <Badge

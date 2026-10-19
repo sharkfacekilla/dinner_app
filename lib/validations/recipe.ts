@@ -10,13 +10,6 @@ const optionalInt = (max: number) => z.number().int().min(0).max(max).nullish().
 export const recipeSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
   description: optionalText(2000),
-  // Only plain web links, so nothing like javascript: or data: URLs ends up in an <img>
-  image: z
-    .url({ protocol: /^https?$/ })
-    .max(2000)
-    .nullish()
-    .or(z.literal(""))
-    .transform((v) => v || null),
   prepTime: optionalInt(10_000),
   cookTime: optionalInt(10_000),
   servings: optionalInt(1_000),

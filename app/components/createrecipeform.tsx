@@ -54,7 +54,7 @@ export function CreateRecipeForm() {
   // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
   const [servings, setServings] = useState("");
@@ -133,7 +133,6 @@ export function CreateRecipeForm() {
     const recipe = {
       title,
       description: description || null,
-      image: imageUrl || null,
       prepTime: parseInt(prepTime) || null,
       cookTime: parseInt(cookTime) || null,
       servings: parseInt(servings) || null,
@@ -152,7 +151,15 @@ export function CreateRecipeForm() {
           tip: tip || null,
         })),
     };
-    const result = await createRecipe(recipe);
+    // The recipe goes as JSON, the (already shrunk) photo as a file
+    const formData = new FormData();
+    formData.append("recipe", JSON.stringify(recipe));
+    if (photo) formData.append("photo", photo);
+    // The request itself can fail (e.g. upload over the size limit, network drop)
+    const result = await createRecipe(formData).catch(() => ({
+      success: false as const,
+      error: "Couldn't save the recipe. If you added a photo, try a smaller one.",
+    }));
     if (result.success) {
       setIsSubmitting(false);
       router.push(`/recipes/${result.id}`);
@@ -166,7 +173,6 @@ export function CreateRecipeForm() {
     const setters: Record<string, Function> = {
       title: setTitle,
       description: setDescription,
-      imageUrl: setImageUrl,
       prepTime: setPrepTime,
       cookTime: setCookTime,
       servings: setServings,
@@ -207,7 +213,6 @@ export function CreateRecipeForm() {
             data={{
               title,
               description,
-              imageUrl,
               prepTime,
               cookTime,
               servings,
@@ -217,6 +222,8 @@ export function CreateRecipeForm() {
               tagInput,
             }}
             updateField={updateBasicField}
+            photo={photo}
+            onPhotoChange={setPhoto}
             onAddTag={addTag}
             onRemoveTag={removeTag}
             onTagKeyDown={handleTagKeyDown}

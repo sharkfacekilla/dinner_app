@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Utensils, ImageIcon, X } from "lucide-react";
+import { PhotoPicker } from "../photopicker";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,6 @@ interface BasicInfoProps {
   data: {
     title: string;
     description: string;
-    imageUrl: string;
     prepTime: string;
     cookTime: string;
     servings: string;
@@ -29,6 +29,8 @@ interface BasicInfoProps {
     tagInput: string;
   };
   updateField: (field: string, value: any) => void;
+  photo: File | null;
+  onPhotoChange: (file: File | null) => void;
   onAddTag: () => void;
   onRemoveTag: (tag: string) => void;
   onTagKeyDown: (e: React.KeyboardEvent) => void;
@@ -39,6 +41,8 @@ interface BasicInfoProps {
 export function RecipeBasicInfo({ 
   data, 
   updateField, 
+  photo,
+  onPhotoChange,
   onAddTag, 
   onRemoveTag, 
   onTagKeyDown, 
@@ -76,29 +80,11 @@ export function RecipeBasicInfo({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="image" className="flex items-center gap-2">
+          <Label className="flex items-center gap-2">
             <ImageIcon className="h-4 w-4" />
-            Image URL
+            Photo
           </Label>
-          <Input
-            id="image"
-            placeholder="https://example.com/recipe-image.jpg"
-            value={data.imageUrl}
-            onChange={(e) => updateField("imageUrl", e.target.value)}
-            className="bg-background/50"
-          />
-          {data.imageUrl && (
-            <div className="relative mt-2 aspect-video w-64 overflow-hidden rounded-lg border border-border">
-              <img
-                src={data.imageUrl}
-                alt="Recipe preview"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-            </div>
-          )}
+          <PhotoPicker value={photo} onChange={onPhotoChange} />
         </div>
         
         {/* Your original 4-column stats grid */}

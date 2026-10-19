@@ -1,6 +1,7 @@
 import { ChefHat } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import type { Recipe } from "@/lib/recipes"
+import { ChangePhotoDialog } from "./changephotodialog"
 
 export function RecipeHeader({ recipe }: { recipe: Recipe }) {
   return (
@@ -17,6 +18,12 @@ export function RecipeHeader({ recipe }: { recipe: Recipe }) {
         <Badge variant="secondary" className="absolute top-4 left-4 bg-card/90 backdrop-blur-sm">
           {recipe.category}
         </Badge>
+        {recipe.isOwner && (
+          <div className="absolute right-4 bottom-4">
+            {/* Placeholder (sample) URLs don't count as a photo; offer "Add" for those */}
+            <ChangePhotoDialog recipeId={recipe.id} currentImage={recipe.hasPhoto ? recipe.image : undefined} />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col justify-center">

@@ -20,6 +20,11 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/client", "pg"],
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js"
+  experimental: {
+    // Photos are shrunk in the browser first (usually < 1 MB); the server accepts up to 8 MB
+    // (lib/images.ts) plus room for the form overhead. Bigger requests are cut off while streaming.
+    serverActions: { bodySizeLimit: "9mb" },
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
