@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import AppSidebar from "./components/sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -24,11 +22,14 @@ export const metadata: Metadata = {
   description: "Self-hosted recipe app for the homelab",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Per-request CSP nonce from proxy.ts; next-themes needs it for its inline script
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -47,17 +48,9 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
+          nonce={nonce}
         >
-          {/* TooltipProvider must sit above the sidebar */}
-          <TooltipProvider>
-            {/* SidebarProvider wraps both the sidebar AND the page content */}
-            <SidebarProvider>
-              <div className="flex min-h-screen w-full">
-                <AppSidebar />
-                <main className="flex-1">{children}</main>
-              </div>
-            </SidebarProvider>
-          </TooltipProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

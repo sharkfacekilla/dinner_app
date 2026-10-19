@@ -36,6 +36,7 @@ import { categories, difficulties } from "@/lib/mock-data";
 import type { Ingredient, Instruction } from "@/lib/recipes";
 import { cn } from "@/lib/utils";
 import { createRecipe } from "@/lib/actions/recipe";
+import type { RecipeInput } from "@/lib/validations/recipe";
 import { RecipeIngredientList } from "./recipes/recipeingredientlist";
 import { RecipeInstructionList } from "./recipes/recipeinstructionlist";
 import { RecipeBasicInfo } from "./recipes/recipebasicinfo";
@@ -136,7 +137,8 @@ export function CreateRecipeForm() {
       prepTime: parseInt(prepTime) || null,
       cookTime: parseInt(cookTime) || null,
       servings: parseInt(servings) || null,
-      difficulty: difficulty || null,
+      // Checked against Easy/Medium/Hard on the server
+      difficulty: (difficulty || null) as RecipeInput["difficulty"],
       category: category || null,
       tags,
       ingredients: ingredients
@@ -153,7 +155,7 @@ export function CreateRecipeForm() {
     const result = await createRecipe(recipe);
     if (result.success) {
       setIsSubmitting(false);
-      router.push("/recipes");
+      router.push(`/recipes/${result.id}`);
     } else {
       // Handle error (e.g., toast notification)
       alert(result.error);

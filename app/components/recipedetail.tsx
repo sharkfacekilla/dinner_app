@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -16,8 +17,20 @@ import { CookingProgress } from "./cookingprogress";
 import { IngredientList } from "./ingredientlist";
 import { InstructionList } from "./instructionlist";
 import type { Recipe } from "@/lib/recipes";
+import { cn } from "@/lib/utils";
+import { toggleFavorite } from "@/lib/actions/recipe";
+import { ShareDialog } from "./sharedialog";
 
 export function RecipeDetail({ recipe }: { recipe: Recipe }) {
+  const [isFavorite, setIsFavorite] = useState(recipe.isFavorite);
+
+  const handleFavorite = async () => {
+    const next = !isFavorite;
+    setIsFavorite(next); // Update right away, roll back if the save fails
+    const result = await toggleFavorite(recipe.id, next);
+    if (!result.success) setIsFavorite(!next);
+  };
+
   const {
     completedSteps,
     setCompletedSteps,
@@ -51,8 +64,13 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
                 {cookingMode ? "Exit Cooking Mode" : "Start Cooking"}
               </span>
             </Button>
-            <Button variant="ghost" size="icon">
-              <Heart className="h-5 w-5" />
+            {recipe.isOwner && (
+              <ShareDialog recipeId={recipe.id} sharedWith={recipe.sharedWith ?? []} />
+            )}
+            <Button variant="ghost" size="icon" onClick={handleFavorite}>
+              <Heart
+                className={cn("h-5 w-5", isFavorite && "fill-red-500 text-red-500")}
+              />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => window.print()}>
               <Printer className="h-5 w-5" />

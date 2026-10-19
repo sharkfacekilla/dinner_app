@@ -13,13 +13,19 @@ import {
 import { EmptyState } from "./recipes/emptystate";
 import { RecipeGrid } from "./recipes/recipegrid";
 import { RecipeList } from "./recipes/recipelist";
+import type { Recipe } from "@/lib/recipes";
+import { useRecipePreview } from "@/lib/hooks/useRecipePreview";
+import { RandomRecipeButton } from "./randomrecipebutton";
+import { RecipePreviewDialog } from "./recipepreviewdialog";
 
-export function FavoritesPage() {
+export function FavoritesPage({ recipes }: { recipes: Recipe[] }) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Pass 'true' to only show favorites
   const { state, setters, filteredAndSortedRecipes, clearFilters } =
-    useRecipesFilter(true);
+    useRecipesFilter(recipes, true);
+  // Only ever picks from favorites (this list is favorites-only)
+  const { pickRandom, dialogProps } = useRecipePreview(filteredAndSortedRecipes);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -27,10 +33,11 @@ export function FavoritesPage() {
         count={filteredAndSortedRecipes.length}
         title="Favorite Recipes"
         subtitle="saved recipes"
+        action={<RandomRecipeButton onPick={pickRandom} />}
       />
 
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="border-b border-border bg-card/50 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-col gap-2 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <RecipeFilters
             state={state}
             setters={setters}
@@ -48,7 +55,7 @@ export function FavoritesPage() {
         <ActiveFilterBadges state={state} setters={setters} />
       </div>
 
-      <main className="flex-1 overflow-auto p-6">
+      <main className="flex-1 overflow-auto p-4 sm:p-6">
         {filteredAndSortedRecipes.length === 0 ? (
           <EmptyState onClear={clearFilters} />
         ) : viewMode === "grid" ? (
@@ -57,6 +64,8 @@ export function FavoritesPage() {
           <RecipeList recipes={filteredAndSortedRecipes} />
         )}
       </main>
+
+      <RecipePreviewDialog {...dialogProps} />
     </div>
   );
 }

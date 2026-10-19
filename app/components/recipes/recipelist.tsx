@@ -3,6 +3,7 @@ import { ChefHat, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FavoriteToggle } from "./favoritetoggle";
+import { ShareDialog } from "../sharedialog";
 import type { Recipe } from "@/lib/recipes";
 
 export function RecipeList({ recipes }: { recipes: Recipe[] }) {
@@ -11,13 +12,21 @@ export function RecipeList({ recipes }: { recipes: Recipe[] }) {
       {recipes.map((recipe) => (
         <div
           key={recipe.id}
-          className="group flex flex-col sm:flex-row cursor-pointer gap-4 rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md relative"
+          className="group relative flex cursor-pointer flex-wrap gap-3 rounded-xl border border-border/50 bg-card p-3 transition-all hover:border-primary/30 hover:shadow-md sm:flex-nowrap sm:gap-4 sm:p-4"
         >
           {/* List View Favorite Toggle */}
-          <div className="absolute top-2 right-2 z-10">
-            <FavoriteToggle initialFavorite={recipe.isFavorite} />
+          <div className="absolute top-2 right-2 z-10 flex items-center">
+            {recipe.isOwner && (
+              <ShareDialog
+                recipeId={recipe.id}
+                sharedWith={recipe.sharedWith ?? []}
+                variant="icon"
+                tone="muted"
+              />
+            )}
+            <FavoriteToggle recipeId={recipe.id} initialFavorite={recipe.isFavorite} />
           </div>
-          <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
+          <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted sm:h-24 sm:w-24">
             {recipe.image ? (
               <img
                 src={recipe.image}
@@ -30,11 +39,14 @@ export function RecipeList({ recipes }: { recipes: Recipe[] }) {
               </div>
             )}
           </div>
-          <div className="flex flex-1 flex-col justify-between">
+          <div className="flex min-w-0 flex-1 flex-col justify-between pr-16">
             <div>
               <h3 className="mb-1 font-semibold text-card-foreground transition-colors group-hover:text-primary">
                 {recipe.title}
               </h3>
+              {!recipe.isOwner && recipe.ownerName && (
+                <p className="mb-1 text-xs font-medium text-primary">Shared by {recipe.ownerName}</p>
+              )}
               <p className="line-clamp-2 text-sm text-muted-foreground">
                 {recipe.description}
               </p>
@@ -61,9 +73,9 @@ export function RecipeList({ recipes }: { recipes: Recipe[] }) {
               </Badge>
             </div>
           </div>
-          <div className="flex items-center sm:pl-4">
+          <div className="flex w-full items-center sm:w-auto sm:pl-4">
             <Link href={`/recipes/${recipe.id}`} className="w-full sm:w-auto">
-              <Button className="w-full pt-6 pb-6 pe-4 ps-4">View Recipe</Button>
+              <Button className="h-8 w-full text-xs sm:h-auto sm:pt-6 sm:pb-6 sm:pe-4 sm:ps-4 sm:text-sm">View Recipe</Button>
             </Link>
           </div>
         </div>

@@ -25,4 +25,7 @@ export type Recipe = {
   ingredients: Ingredient[];
   instructions: Instruction[];
   isFavorite?: boolean;
+  isOwner?: boolean; // false = someone shared it with you
+  ownerName?: string;
+  sharedWith?: string[]; // usernames; only filled in for the owner
 };

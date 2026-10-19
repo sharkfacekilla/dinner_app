@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { mockRecipes } from "@/lib/mock-data";
+import type { Recipe } from "@/lib/recipes";
 
 export type SortOption =
   | "newest"
@@ -24,14 +24,14 @@ export interface FilterSetters {
 }
 
 // Pass `true` to only show favorites (used by the Favorites page)
-export function useRecipesFilter(onlyFavorites: boolean = false) {
+export function useRecipesFilter(recipes: Recipe[], onlyFavorites: boolean = false) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
 
   const filteredAndSortedRecipes = useMemo(() => {
-    const filtered = [...mockRecipes].filter((recipe) => {
+    const filtered = [...recipes].filter((recipe) => {
       if (onlyFavorites && !recipe.isFavorite) return false;
 
       const matchesSearch = recipe.title
@@ -71,7 +71,7 @@ export function useRecipesFilter(onlyFavorites: boolean = false) {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory, selectedDifficulty, sortBy, onlyFavorites]);
+  }, [recipes, searchQuery, selectedCategory, selectedDifficulty, sortBy, onlyFavorites]);
 
   const clearFilters = () => {
     setSelectedCategory("All");

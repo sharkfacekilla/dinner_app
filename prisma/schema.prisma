@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Recipe {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String?
   image       String?
@@ -23,12 +23,67 @@ model Recipe {
   category    String?
   tags        String[]
 
+  // Every recipe belongs to the user who created it
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   // Relations
   ingredients  Ingredient[]
   instructions Instruction[]
+  favorites    Favorite[]
+  shares       RecipeShare[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+}
+
+// Accounts are only created from the command line (npm run user), never from the website
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  recipes      Recipe[]
+  sessions     Session[]
+  favorites    Favorite[]
+  sharedWithMe RecipeShare[]
+}
+
+// The cookie holds a random token; only its SHA-256 hash is stored here
+model Session {
+  id        String   @id // sha256(token), hex
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Favorites are per person
+model Favorite {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, recipeId])
+}
+
+// The owner shares a recipe with a specific person
+model RecipeShare {
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([recipeId, userId])
+  @@index([userId])
 }
 
 model Ingredient {

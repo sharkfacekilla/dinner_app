@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { RecipeDetail } from "../../components/recipedetail";
-import { mockRecipes } from "@/lib/mock-data";
+import { RecipeDetail } from "@/app/components/recipedetail";
+import { getRecipe } from "@/lib/data/recipes";
 
 export default async function Page({
   params,
@@ -8,7 +8,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const recipe = mockRecipes.find((r) => r.id === id);
+  const recipe = await getRecipe(id);
 
   if (!recipe) notFound();
 

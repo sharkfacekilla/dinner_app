@@ -21,6 +21,9 @@ export function RecipeHeader({ recipe }: { recipe: Recipe }) {
 
       <div className="flex flex-col justify-center">
         <div className="mb-4 flex flex-wrap gap-2">
+          {!recipe.isOwner && recipe.ownerName && (
+            <Badge className="text-xs">Shared by {recipe.ownerName}</Badge>
+          )}
           {recipe.tags?.map((tag) => (
             <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
           ))}

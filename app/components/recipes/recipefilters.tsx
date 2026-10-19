@@ -32,8 +32,8 @@ export function RecipeFilters({
   ].filter(Boolean).length;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-      <div className="relative flex-1 sm:max-w-xs">
+    <div className="grid flex-1 grid-cols-2 gap-2 sm:flex sm:flex-row sm:items-center sm:gap-3">
+      <div className="relative col-span-2 flex-1 sm:max-w-xs">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search recipes..."
@@ -46,13 +46,13 @@ export function RecipeFilters({
         value={selectedCategory}
         onValueChange={setters.setSelectedCategory}
       >
-        <SelectTrigger className="w-full sm:w-[150px]">
+        <SelectTrigger className="w-full sm:w-[160px]">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
         <SelectContent>
           {categories.map((category: string) => (
             <SelectItem key={category} value={category}>
-              {category}
+              {category === "All" ? "All categories" : category}
             </SelectItem>
           ))}
         </SelectContent>
@@ -61,13 +61,13 @@ export function RecipeFilters({
         value={selectedDifficulty}
         onValueChange={setters.setSelectedDifficulty}
       >
-        <SelectTrigger className="w-full sm:w-[130px]">
+        <SelectTrigger className="w-full sm:w-[150px]">
           <SelectValue placeholder="Difficulty" />
         </SelectTrigger>
         <SelectContent>
           {difficulties.map((difficulty: string) => (
             <SelectItem key={difficulty} value={difficulty}>
-              {difficulty}
+              {difficulty === "All" ? "All difficulties" : difficulty}
             </SelectItem>
           ))}
         </SelectContent>
@@ -77,7 +77,7 @@ export function RecipeFilters({
           variant="ghost"
           size="sm"
           onClick={onClear}
-          className="gap-1.5 text-muted-foreground hover:text-foreground"
+          className="col-span-2 gap-1.5 text-muted-foreground hover:text-foreground sm:col-span-1"
         >
           <X className="h-4 w-4" />
           Clear

@@ -10,7 +10,7 @@ import {
   FolderOpen,
   PlusCircle,
   Settings,
-  LogIn,
+  LogOut,
   ChefHat,
   Search,
   Tag,
@@ -32,6 +32,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
+import { logout } from "@/lib/actions/auth";
 
 const mainNavItems = [
   { title: "Dashboard", icon: Home, url: "/" },
@@ -46,7 +47,7 @@ const actionItems = [
   { title: "Import Recipe", icon: BookOpen, url: "/recipes/import" },
 ];
 
-export default function AppSidebar() {
+export default function AppSidebar({ username }: { username: string }) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
 
@@ -180,16 +181,12 @@ export default function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              tooltip="Login"
-              isActive={pathname === "/login"}
-            >
-              <a href="/login">
-                <LogIn className="h-4 w-4" />
-                <span>Login</span>
-              </a>
-            </SidebarMenuButton>
+            <form action={logout}>
+              <SidebarMenuButton type="submit" tooltip={`Log out (${username})`}>
+                <LogOut className="h-4 w-4" />
+                <span>Log out ({username})</span>
+              </SidebarMenuButton>
+            </form>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
